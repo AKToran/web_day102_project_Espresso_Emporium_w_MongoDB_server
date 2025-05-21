@@ -19,13 +19,22 @@ async function run() {
   try {
     await client.connect();
 
+    //create or access db:
+    const database = client.db('coffeeDB');
+    const coffeeCollection = database.collection('coffees')
 
+    app.post('/coffees', async(req, res)=>{
+      const newCoffee = req.body;
+      const result = await coffeeCollection.insertOne(newCoffee)
+      res.send(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } 
   finally {
-    await client.close();
+    // don't want to close the server after just one ping.
+    // await client.close();
   }
 }
 run().catch(console.dir);
