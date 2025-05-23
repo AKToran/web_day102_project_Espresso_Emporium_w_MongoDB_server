@@ -21,7 +21,9 @@ async function run() {
 
     //create or access db:
     const database = client.db('coffeeDB');
-    const coffeeCollection = database.collection('coffees')
+    const coffeeCollection = database.collection('coffees');
+    // one db can have multiple collections:
+    const usersCollection = database.collection('users');
 
     app.get('/coffees', async(req, res)=>{
       const cursor = coffeeCollection.find();
@@ -60,6 +62,19 @@ async function run() {
       const result = await coffeeCollection.deleteOne(query);
       res.send(result);
     })
+
+    //user related apis:
+    app.post('/users', async(req, res)=>{
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    })
+
+    app.get('/users', async(req, res)=>{
+      const users = await usersCollection.find().toArray();
+      res.send(users);
+    })
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
